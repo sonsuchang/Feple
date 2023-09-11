@@ -19,69 +19,83 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
     'assets/image/poster/waterbomb_poster.jpg',
   ];
 
+  int _currentPage = 0;
+
+  void _onPageChanged(int newPage) {
+    setState(() {
+      if (_currentPage != null) {
+        _currentPage = newPage;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      width: double.infinity,
-      child: Stack(
-        children: [
-          Swiper(
-            scale: 0.9,
-            //viewportFraction: 0.9,
-            itemCount: posterList.length,
-            autoplay: true,
-            itemBuilder: (BuildContext context, int index) {
-              return Stack(
-                children: [
-                  Image.asset(
-                    posterList[index],
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                  BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          SizedBox(
-            //color: AppColors.grey, //이걸로 사이즈 확인
-            //height: 350,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-              child: Swiper(
-                outer: true,
-                itemCount: posterList.length,
-                viewportFraction: 0.6,
-                // 위젯크기(포스터 크기)
-                scale: 0.8,
-                // 사진간의 간격
-                pagination: const SwiperPagination(
-                  alignment: Alignment.bottomCenter,
-                  margin: EdgeInsets.all(10),
-                  builder: DotSwiperPaginationBuilder(
-                    size: 5.0,
-                    space: 3.0,
-                    activeColor: AppColors.brightBlue,
-                    color: AppColors.middleGrey,
-                  ),
-                ),
-                autoplay: true,
-                autoplayDisableOnInteraction: true,
-                // autoplay is disabled when use swipes.
-                itemBuilder: (BuildContext context, int index) {
-                  return Image.asset(posterList[index]);
-                }, //control: SwiperControl(),
+    return Stack(
+      children: [
+        Container(
+          height: 300,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                posterList[_currentPage],
               ),
+              fit: BoxFit.cover,
             ),
           ),
-        ],
-      ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.black.withOpacity(0.2),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 300,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+            child: Swiper(
+              onIndexChanged: _onPageChanged,
+              viewportFraction: 0.6,
+              scale: 0.4,
+              autoplay: true,
+              duration: 300,
+              itemCount: posterList.length,
+              pagination: const SwiperPagination(
+                builder: DotSwiperPaginationBuilder(
+                  activeColor: Colors.blue,
+                  color: Colors.grey,
+                ),
+              ),
+              itemBuilder: (BuildContext context, int index) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    posterList[index ?? 0],
+                    fit: BoxFit.fill,
+                  ),
+                );
+              },
+              layout: SwiperLayout.CUSTOM,
+              customLayoutOption: CustomLayoutOption(
+                startIndex: -1,
+                stateCount: posterList.length-1,
+              )
+                ..addRotate([
+                  -45.0 / 180,
+                  0.0,
+                  45.0 / 180
+                ])..addTranslate([
+                  Offset(-370.0, -40.0),
+                  Offset(0.0, 0.0),
+                  Offset(370.0, -40.0)
+                ]),
+              itemWidth: 180,
+              itemHeight: 254.5,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
